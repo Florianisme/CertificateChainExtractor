@@ -5,8 +5,8 @@
 	<artifactId>frontend</artifactId>
 
 	<parent>
-		<groupId>de.jonashackt</groupId>
-		<artifactId>spring-boot-vuejs</artifactId>
+		<groupId>de.florianisme.certificates</groupId>
+		<artifactId>certificate-chain-extractor</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
