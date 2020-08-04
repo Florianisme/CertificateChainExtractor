@@ -40,4 +40,8 @@ public class CertificateUtil {
         return "";
     }
 
+    public static boolean isRootCertificate(X509Certificate x509Certificate) {
+        return x509Certificate.getKeyUsage()[5];
+    }
+
 }

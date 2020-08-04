@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.*;
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 public class ChainExtractorController {
 
     @GetMapping(path = "api/v1/getChain")
-    public List<CertificateEntry> getCertificateChain(@PathParam("queryUrl") String queryUrl) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateEncodingException {
+    public Collection<CertificateEntry> getCertificateChain(@PathParam("queryUrl") String queryUrl) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateEncodingException {
         CertificateExtractor certificateExtractor = new CertificateExtractor();
         return certificateExtractor.getCertificateChain(queryUrl);
     }

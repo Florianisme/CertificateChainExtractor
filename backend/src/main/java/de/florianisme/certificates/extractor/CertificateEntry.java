@@ -7,6 +7,7 @@ public class CertificateEntry {
     private final String encodedContent;
 
     private boolean isValid;
+    private boolean isRootCertificate;
     private String fingerprint;
     private String subject;
 
@@ -40,5 +41,13 @@ public class CertificateEntry {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public boolean isRootCertificate() {
+        return isRootCertificate;
+    }
+
+    public void setRootCertificate(boolean rootCertificate) {
+        isRootCertificate = rootCertificate;
     }
 }
