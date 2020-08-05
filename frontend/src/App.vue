@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Hello</router-link>
-    </div>
     <router-view :hellomsg="msg"></router-view>
   </div>
 </template>
