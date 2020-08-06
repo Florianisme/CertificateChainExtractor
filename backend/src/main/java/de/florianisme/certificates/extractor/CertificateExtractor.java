@@ -1,5 +1,6 @@
 package de.florianisme.certificates.extractor;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;

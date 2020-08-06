@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "axios": "0.19.2",
-    "bootstrap": "4.5.1",
-    "bootstrap-vue": "2.16.0",
-    "jquery": "3.5.1",
     "core-js": "3.6.5",
+    "jquery": "3.5.1",
+    "material-design-icons": "^3.0.1",
+    "materialize-css": "^1.0.0-rc.2",
     "vue": "2.6.11",
     "vue-router": "3.3.4",
     "vuex": "3.5.1"
