@@ -1,19 +1,25 @@
 package de.florianisme.certificates.extractor;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.*;
-import java.util.*;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.HttpHost;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 
 public class CertificateExtractor {
 
@@ -22,8 +28,9 @@ public class CertificateExtractor {
 
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setSSLContext(getSslContext(certificates))
+                .setProxy(new HttpHost("kunde.proxy.itelligence.de", 8000))
                 .build();
-        HttpGet request = new HttpGet(url);
+        HttpHead request = new HttpHead(url);
 
         httpClient.execute(request);
 
@@ -40,15 +47,8 @@ public class CertificateExtractor {
             @Override
             public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
                 for (X509Certificate x509Certificate : x509Certificates) {
-                    String fingerprint = CertificateUtil.getFingerprint(x509Certificate);
-
-                    CertificateEntry certificateEntry = new CertificateEntry(CertificateUtil.convertToPem(x509Certificate));
-                    certificateEntry.setSubject(x509Certificate.getSubjectDN().toString());
-                    certificateEntry.setValid(CertificateUtil.checkValidity(x509Certificate));
-                    certificateEntry.setFingerprint(fingerprint);
-                    certificateEntry.setRootCertificate(CertificateUtil.isRootCertificate(x509Certificate));
-
-                    certificates.put(fingerprint, certificateEntry);
+                    CertificateEntry certificateEntry = buildCertificateEntry(x509Certificate);
+                    certificates.put(certificateEntry.getFingerprint(), certificateEntry);
                 }
             }
 
@@ -59,5 +59,18 @@ public class CertificateExtractor {
         }}, new SecureRandom());
 
         return sslContext;
+    }
+
+    @NotNull
+    private CertificateEntry buildCertificateEntry(X509Certificate x509Certificate) throws CertificateEncodingException {
+        String fingerprint = CertificateUtil.getFingerprint(x509Certificate);
+
+        CertificateEntry certificateEntry = new CertificateEntry(CertificateUtil.convertToPem(x509Certificate));
+        certificateEntry.setSubject(x509Certificate.getSubjectDN().toString());
+        certificateEntry.setValid(CertificateUtil.checkValidity(x509Certificate));
+        certificateEntry.setName(CertificateUtil.getName(x509Certificate));
+        certificateEntry.setFingerprint(fingerprint);
+        certificateEntry.setRootCertificate(CertificateUtil.isRootCertificate(x509Certificate));
+        return certificateEntry;
     }
 }
