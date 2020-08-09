@@ -28,7 +28,6 @@ public class CertificateExtractor {
 
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setSSLContext(getSslContext(certificates))
-                .setProxy(new HttpHost("kunde.proxy.itelligence.de", 8000))
                 .build();
         HttpHead request = new HttpHead(url);
 

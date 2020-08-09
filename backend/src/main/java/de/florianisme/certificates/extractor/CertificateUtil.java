@@ -14,9 +14,7 @@ public class CertificateUtil {
 	public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
 	public static final String END_CERT = "-----END CERTIFICATE-----";
 
-	// TODO fix non matching regex for example:     CN=Let's Encrypt Authority X3, O=Let's Encrypt, C=US
-	public static final Pattern REGEX_NAME_PATTERN = Pattern.compile("CN=(?<name>.*?)(?=,)");
-	public static final Pattern REGEX_NAME_PATTERN_ONLY_CN = Pattern.compile("CN=(?<name>.*)");
+	public static final Pattern REGEX_NAME_PATTERN = Pattern.compile("CN=(?<name>.*)");
 
 	public static String convertToPem(Certificate certificate) throws CertificateEncodingException {
 		final Base64.Encoder encoder = Base64.getMimeEncoder(64, new byte[] { 0x0A });
@@ -53,14 +51,10 @@ public class CertificateUtil {
 	public static String getName(X509Certificate x509Certificate) {
 		final String subjectDn = x509Certificate.getSubjectDN().toString();
 
-		final Matcher regexNameMatcher = REGEX_NAME_PATTERN.matcher(subjectDn);
-		final Matcher regexNameOnlyCnMatcher = REGEX_NAME_PATTERN_ONLY_CN.matcher(subjectDn);
+		final Matcher regexNameMatcher = REGEX_NAME_PATTERN.matcher(subjectDn.split(",")[0]);
 
 		if (regexNameMatcher.matches()) {
 			return regexNameMatcher.group("name");
-		}
-		else if(regexNameOnlyCnMatcher.matches()) {
-			return regexNameOnlyCnMatcher.group("name");
 		}
 		return subjectDn;
 	}
