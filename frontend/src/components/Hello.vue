@@ -1,13 +1,19 @@
 <template>
       <div class="container">
-        <h3>Certificate chain extractor</h3>
-        <h4>Please input the url below:</h4>
-        <div class="row">
-          <input type="url" class="col s12 m6" v-model="queryUrl" placeholder="https://www.google.de"/>
-          <button class="waves-effect waves-light btn-small grey darken-4" type="submit" name="action" v-on:click="onUrlSubmit">Submit
+
+        <h3 class="header">Certificate Chain Extractor</h3>
+        <span class="header-subtitle">This website allows you to extract and download the full certificate chain for a specified URL.<br>
+        This can be useful when you need to import the full chain into a keystore, which is then used to verify the integrity of a website (often used in business applications).</span>
+        <div class="row input-row">
+          
+          <div class="input-field ">
+            <input type="url" id="url" class="col s12 m6" v-model="queryUrl" placeholder="https://www.google.de"/>
+            <label for="url">Url</label>
+          </div>
+        </div>
+          <button class="waves-effect waves-light btn-small blue accent-4" type="submit" name="action" v-on:click="onUrlSubmit">Submit
             <i class="material-icons right">send</i>
           </button>
-        </div>
         
         <ul v-if="certificates !== undefined" class="collection with-header" v-bind:class="{ fadeIn: certificates != undefined }">
           <li class="collection-header">Certificate chain</li>
@@ -82,6 +88,18 @@ p.medium {
 }
 i.dark-grey {
   color: #212121;
+}
+
+.header {
+  font-weight: 700
+}
+
+.header-subtitle {
+  font-size: 1.25rem;
+}
+
+.input-row {
+  margin-top: 48px;
 }
 
 .loader {
