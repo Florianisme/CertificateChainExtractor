@@ -7,8 +7,11 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -24,10 +27,11 @@ import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 public class CertificateExtractor {
 
     public Collection<CertificateEntry> getCertificateChain(String url) throws KeyManagementException, NoSuchAlgorithmException, IOException {
-        Map<String, CertificateEntry> certificates = new HashMap<>();
+        Map<String, CertificateEntry> certificates = new LinkedHashMap<>();
 
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setSSLContext(getSslContext(certificates))
+                .setProxy(new HttpHost("kunde.proxy.itelligence.de", 8000))
                 .build();
         HttpHead request = new HttpHead(url);
 
@@ -45,8 +49,16 @@ public class CertificateExtractor {
 
             @Override
             public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                for (X509Certificate x509Certificate : x509Certificates) {
-                    CertificateEntry certificateEntry = buildCertificateEntry(x509Certificate);
+                List<X509Certificate> orderedCertificates;
+                try {
+                    orderedCertificates = CertificateUtil.sortX509Chain(x509Certificates);
+                } catch (SortingException e) {
+                    e.printStackTrace();
+                    orderedCertificates = Arrays.asList(x509Certificates);
+                }
+
+                for (X509Certificate x509Certificate : orderedCertificates) {
+                    CertificateEntry certificateEntry = buildCertificateEntry(x509Certificate, x509Certificates.length);
                     certificates.put(certificateEntry.getFingerprint(), certificateEntry);
                 }
             }
@@ -61,12 +73,12 @@ public class CertificateExtractor {
     }
 
     @NotNull
-    private CertificateEntry buildCertificateEntry(X509Certificate x509Certificate) throws CertificateEncodingException {
+    private CertificateEntry buildCertificateEntry(X509Certificate x509Certificate, int chainLength) throws CertificateEncodingException {
         String fingerprint = CertificateUtil.getFingerprint(x509Certificate);
 
         CertificateEntry certificateEntry = new CertificateEntry(CertificateUtil.convertToPem(x509Certificate));
         certificateEntry.setSubject(x509Certificate.getSubjectDN().toString());
-        certificateEntry.setValid(CertificateUtil.checkValidity(x509Certificate));
+        CertificateUtil.checkAndSetValidity(x509Certificate, certificateEntry, chainLength);
         certificateEntry.setName(CertificateUtil.getName(x509Certificate));
         certificateEntry.setFingerprint(fingerprint);
         certificateEntry.setRootCertificate(CertificateUtil.isRootCertificate(x509Certificate));

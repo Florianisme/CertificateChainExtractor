@@ -1,12 +1,11 @@
 package de.florianisme.certificates.extractor;
 
-import java.util.Arrays;
-
 public class CertificateEntry {
 
     private final String encodedContent;
 
-    private boolean isValid;
+    private SecurityLevel securityLevel = SecurityLevel.SECURE;
+    private String reasonPhrase;
     private boolean isRootCertificate;
     private String fingerprint;
     private String subject;
@@ -20,12 +19,12 @@ public class CertificateEntry {
         return encodedContent;
     }
 
-    public boolean isValid() {
-        return isValid;
+    public SecurityLevel getSecurityLevel() {
+        return securityLevel;
     }
 
-    public void setValid(boolean valid) {
-        isValid = valid;
+    public void setSecurityLevel(SecurityLevel valid) {
+        securityLevel = valid;
     }
 
     public String getFingerprint() {
@@ -58,5 +57,13 @@ public class CertificateEntry {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
+
+    public void setReasonPhrase(String reasonPhrase) {
+        this.reasonPhrase = reasonPhrase;
     }
 }

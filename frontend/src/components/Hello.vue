@@ -1,27 +1,29 @@
 <template>
       <div class="container">
 
-        <h3 class="header">Certificate Chain Extractor</h3>
-        <span class="header-subtitle">This website allows you to extract and download the full certificate chain for a specified URL.<br>
-        This can be useful when you need to import the full chain into a keystore, which is then used to verify the integrity of a website (often used in business applications).</span>
+        <h4 class="header">Certificate Chain Extractor</h4>
+        <span class="header-subtitle">This tool allows you to extract and download the full certificate chain for a specified URL.<br>
+        The certificates are validated based on their expiry date and if they are signed by a CA.</span>
         <div class="row input-row">
           
           <div class="input-field ">
-            <input type="url" id="url" class="col s12 m6" v-model="queryUrl" placeholder="https://www.google.de"/>
+            <input type="url" id="url" class="col s12 m6" v-model="queryUrl" placeholder="https://"/>
             <label for="url">Url</label>
           </div>
-        </div>
-          <button class="waves-effect waves-light btn-small blue accent-4" type="submit" name="action" v-on:click="onUrlSubmit">Submit
+          <button class="waves-effect waves-light btn btn-margin blue accent-4" type="submit" name="action" v-on:click="onUrlSubmit">Submit
             <i class="material-icons right">send</i>
           </button>
+        </div>
         
         <ul v-if="certificates !== undefined" class="collection with-header" v-bind:class="{ fadeIn: certificates != undefined }">
           <li class="collection-header">Certificate chain</li>
           <li v-for="certificate in certificates" :key="certificate.fingerprint" class="collection-item avatar">
-            <i class="material-icons circle green">lock</i>
+            <i class="material-icons circle green" v-if="certificate.securityLevel == 'SECURE'">lock_outline</i>
+            <i class="material-icons circle" v-if="certificate.securityLevel != 'SECURE'" v-bind:class="{ red: certificate.securityLevel == 'EXPIRED', orange: certificate.securityLevel == 'SELF_SIGNED' }">lock_open</i>
             <span class="title bold">{{certificate.subject}}</span>
-            <p>{{certificate.fingerprint}}</p>
+            <p>Fingerprint: {{certificate.fingerprint}}</p>
             <p v-if="certificate.rootCertificate" class="medium">Certificate Authority</p>
+            <p v-if="certificate.securityLevel != SECURE"  class="medium">{{certificate.reasonPhrase}}</p>
             <a href="#!" v-on:click="downloadCertificate(certificate)" class="secondary-content"><i class="material-icons dark-grey">file_download</i></a>
           </li>
         </ul>
@@ -50,7 +52,7 @@ export default {
       let $this = this;
       backend.axios().get("/getChain?queryUrl=" + this.queryUrl)
       .then(function(response) {
-        $this.certificates = response.data;
+        $this.certificates = response.data.reverse();
 
       }).catch(function(error) {
         // TODO show error  
@@ -95,12 +97,17 @@ i.dark-grey {
 }
 
 .header-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .input-row {
   margin-top: 48px;
 }
+
+.btn-margin {
+  margin-left: 24px;
+}
+
 
 .loader {
   border: 9px solid #f3f3f3; 
