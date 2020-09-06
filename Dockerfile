@@ -14,7 +14,7 @@ RUN mvn clean install
 
 
 # Just using the build artifact and then removing the build-container
-FROM openjdk:11-jdk
+FROM arm64v8/openjdk:11.0.8-jdk-buster
 
 MAINTAINER Jonas Hecht
 
