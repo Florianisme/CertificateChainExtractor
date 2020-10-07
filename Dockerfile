@@ -14,7 +14,8 @@ RUN mvn clean install
 
 
 # Just using the build artifact and then removing the build-container
-FROM arm64v8/openjdk:11.0.8-jdk-buster
+#FROM arm32v7/openjdk:11.0.8-jdk-buster
+FROM adoptopenjdk/openjdk11:armv7l-debianslim-jdk-11.0.8_10
 
 MAINTAINER Jonas Hecht
 
